@@ -43,7 +43,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', "default-unsafe-key")  # Use environ
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', True)  # Use environment variables for production
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '127.0.0.1:8034']
+ALLOWED_HOSTS = ['dog-group.onrender.com']
+
 
 # Email settings for development
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
