@@ -1,0 +1,16 @@
+{
+  "name": "dog_walking_exchange",
+  "version": "1.0.0",
+  "description": "**Dog Walking Exchange** is a web application designed to connect dog owners in Dublin, facilitating the process of finding walking partners, sharing dog walking tips, and accessing resources for dog training and parks in the area.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15"
+  }
+}

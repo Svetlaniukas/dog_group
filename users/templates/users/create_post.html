@@ -1,0 +1,14 @@
+<!-- templates/users/create_post.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Create Post</h2>
+    <form method="post" enctype="multipart/form-data"> <!-- Add enctype attribute -->
+        {% csrf_token %}
+        {{ form.as_p }} <!-- This will render all form fields including the image field -->
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

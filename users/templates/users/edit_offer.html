@@ -1,0 +1,16 @@
+<!-- edit_offer.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Offer{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Your Offer</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Update Offer</button>
+    </form>
+</div>
+{% endblock %}

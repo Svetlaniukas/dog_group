@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Users{% endblock %}
+
+{% block content %}
+<h2>All Users</h2>
+<ul class="list-group">
+    {% for user in users %}
+    <li class="list-group-item">
+        <strong>{{ user.username }}</strong>
+        <a href="{% url 'send_message' user.id %}" class="btn btn-primary float-end">Send Message</a>
+    </li>
+    {% empty %}
+    <li class="list-group-item">No users found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

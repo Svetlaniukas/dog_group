@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendar{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h2 class="text-center">Event Calendar</h2>
+    <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addEventModal">Add Event</button>
+    <div class="calendar">
+        {% for day in days %}
+            <div class="day">
+                <span>{{ day }}</span>
+                <ul>
+                    {% for event in events %}
+                        {% if event.start_date.day == day %}
+                            <li>{{ event.title }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal for Adding Events -->
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEventModalLabel">Add New Event</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'add_event' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="eventTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" id="eventTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventStart" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" name="start_date" id="eventStart" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventEnd" class="form-label">End Date</label>
+                        <input type="date" class="form-control" name="end_date" id="eventEnd">
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventLocation" class="form-label">Location</label>
+                        <input type="text" class="form-control" name="location" id="eventLocation">
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventDescription" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="eventDescription"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#addEventModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var date = button.data('date');
+        var modal = $(this);
+        modal.find('#eventStart').val(date);
+    });
+});
+</script>
+{% endblock %}

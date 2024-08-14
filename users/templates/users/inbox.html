@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Inbox</h2>
+
+    <h3>Active Messages</h3>
+    <ul class="list-group mb-4">
+        {% for message in messages %}
+            <li class="list-group-item">
+                <h5>{{ message.subject }}</h5>
+                <p>{{ message.content }}</p>
+                <p><strong>From:</strong> {{ message.sender.username }} <strong>To:</strong> {{ message.receiver.username }}</p>
+                <a href="{% url 'send_message' receiver_id=message.sender.id %}" class="btn btn-info mb-4">Reply to Sender</a>
+                <form method="post" action="{% url 'archive_message' message.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">Archive</button>
+                </form>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No active messages.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Archived Messages</h3>
+    <ul class="list-group">
+        {% for message in archived_messages %}
+            <li class="list-group-item">
+                <h5>{{ message.subject }}</h5>
+                <p>{{ message.content }}</p>
+                <p><strong>From:</strong> {{ message.sender.username }} <strong>To:</strong> {{ message.receiver.username }}</p>
+                <form method="post" action="{% url 'unarchive_message' message.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">Unarchive</button>
+                </form>
+                
+            </li>
+        {% empty %}
+            <li class="list-group-item">No archived messages.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

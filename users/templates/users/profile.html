@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="text-center mb-4">Profile</h2>
+            <div class="card mb-4">
+                <div class="card-body">
+                    {% if user.userprofile.profile_picture %}
+                        <div class="text-center mb-4">
+                            <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
+                        </div>
+                    {% else %}
+                        <div class="text-center mb-4">
+                            <img src="{% static 'img/default-profile.png' %}" alt="Default Profile Picture" class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
+                            <p class="text-muted mt-2">No profile picture uploaded.</p>
+                        </div>
+                    {% endif %}
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ user_form|crispy }}
+                        {{ profile_form|crispy }}
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Добавляем кнопку для отправки сообщения -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'send_message' user.id %}" class="btn btn-secondary">Send Message</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

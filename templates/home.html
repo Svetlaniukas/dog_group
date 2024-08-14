@@ -1,0 +1,457 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron text-center bg-light p-5">
+    <h1 class="display-4">Welcome to the Dog Walking Lovers Community!</h1>
+    <p class="lead">Find the best dog walking partners in Dublin!</p>
+    <hr class="my-4">
+    <p>Join our community to explore amazing opportunities for your furry friends.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'register' %}" role="button">Join Now / Register</a>
+</div>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{% static 'img/dog_training_1.jpg' %}" class="card-img-top" alt="Dog Training">
+                <div class="card-body">
+                    <h5 class="card-title">Dog Walking Tips</h5>
+                    <p class="card-text">Discover essential tips for walking your dog safely and effectively.</p>
+                    <a href="https://www.primrosehillvets.ie/news/115-tips-for-walking-your-dog-during-summer" target="_blank" class="btn btn-outline-primary">Read More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{% static 'img/dog_training_2.jpg' %}" class="card-img-top" alt="Dog Training Classes">
+                <div class="card-body">
+                    <h5 class="card-title">Training Classes in Dublin</h5>
+                    <p class="card-text">Explore top-rated dog training classes in Dublin to enhance your dog's skills.</p>
+                    <a href="https://preply.com/en/online/irish-tutors?campaignid=21041742666&network=g&adgroupid=157081770137&adgroupintent=course&keywordtype=&keyword=courses%20irish&matchtype=b&creative=694862248716&targetid=kwd-921818578772&placement=&loc_physical_ms=9040161&device=c&utm_source=google&utm_medium=cpc&utm_term=courses%20irish&utm_campaign=stu_sem_generic_web_0_eng_ie_multiplesub_bm%20-v1&hsa_acc=6909028442&hsa_cam=21041742666&hsa_grp=157081770137&hsa_ad=694862248716&hsa_src=g&hsa_tgt=kwd-921818578772&hsa_kw=courses%20irish&hsa_mt=b&hsa_net=adwords&hsa_ver=3&gad_source=1&gbraid=0AAAAADcbD23OHrYLs-E0wcVWziYml5rFq&gclid=CjwKCAjwqre1BhAqEiwA7g9QhsFp1jdbw8EjHCemJrWztnDDAF2vbDraSN1R3WdU6Ipi65gpXKO9JxoCDR0QAvD_BwE" target="_blank" class="btn btn-outline-primary">Find Classes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{% static 'img/dog_training_3.jpg' %}" class="card-img-top" alt="Dog Parks">
+                <div class="card-body">
+                    <h5 class="card-title">Best Dog Parks</h5>
+                    <p class="card-text">Find the best dog parks in Dublin where your pet can play and socialize.</p>
+                    <a href="https://www.heydublin.ie/best-dog-parks-dublin" target="_blank" class="btn btn-outline-primary">Explore Parks</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="event-info text-center">
+        <h2 class="display-5">Easily Manage Your Dog Walking Events</h2>
+        <p class="lead">As a registered user, you can effortlessly create and manage dog walking events. Just click on any date in the calendar below, fill in the details, and you're all set! You can also edit or delete your events at any time.</p>
+        <p class="instructions">Click on a date to start adding your events. Your upcoming dog walks are just a click away!</p>
+    </div>
+</div>
+<div class="container mt-5">
+    <h2 class="text-center">Event Calendar</h2>
+    <div id="calendar" class="calendar"></div>
+</div>
+
+
+<!-- Modal for Adding Events -->
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEventModalLabel">Add New Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addEventForm">
+                    <div class="mb-3">
+                        <label for="eventTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="eventTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventStart" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="eventStart" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventEnd" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="eventEnd">
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventLocation" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="eventLocation">
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="eventDescription"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Editing Events -->
+<div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editEventForm">
+                    <input type="hidden" id="editEventId">
+                    <div class="mb-3">
+                        <label for="editEventTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="editEventTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEventStart" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="editEventStart" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEventEnd" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="editEventEnd">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEventLocation" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="editEventLocation">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEventDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editEventDescription"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Event</button>
+                    <button type="button" class="btn btn-danger" id="deleteEventBtn">Delete Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <h2 class="text-center">Available Offers</h2>
+    <a href="{% url 'create_offer' %}" class="btn btn-success mb-3">Create New Offer</a>
+    <ul class="list-group mt-3">
+        {% for offer in offers %}
+            <li class="list-group-item">
+                <div class="user-offer-card d-flex align-items-center">
+                    <!-- Добавлено отображение аватарки владельца предложения -->
+                    <div class="avatar-container">
+                        {% if offer.owner.userprofile.profile_picture %}
+                            <img src="{{ offer.owner.userprofile.profile_picture.url }}" alt="{{ offer.owner.username }}" class="avatar">
+                        {% else %}
+                            <img src="{% static 'img/default_avatar.png' %}" alt="Default Avatar" class="avatar">
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h3>{{ offer.title }}</h3>
+                        <p>{{ offer.description }}</p>
+                        <p><strong>Location:</strong> {{ offer.location }}</p>
+                        <p><small>Meeting Date: {{ offer.date }} at {{ offer.time }}</small></p>
+                        <p><small>Participants: {{ offer.stakeholders.count }} joined</small></p>
+                        <ul class="list-inline">
+                            {% for participant in offer.stakeholders.all %}
+                                <li class="list-inline-item">
+                                    {{ participant.username }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        {% if user == offer.owner %}
+                            <a href="{% url 'edit_offer' offer.id %}" class="btn btn-warning">Edit Offer</a>
+                            <form method="post" action="{% url 'delete_offer' offer.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Delete Offer</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'join_offer' offer.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">Join Offer</button>
+                                <div class="text-center mt-4">
+                                    {% if offer.owner %}
+                                        <a href="{% url 'send_message' offer.owner.id %}" class="btn btn-secondary">Send Message</a>
+                                    {% endif %}
+                                </div>                                
+
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No offers available.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-center flex-grow-1">Recent Posts</h2>
+        <a href="{% url 'create_post' %}" class="btn btn-primary ms-3">Create New Post</a>
+    </div>
+    <div class="row">
+        {% for post in posts %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" class="card-img-top img-fluid" alt="Post Image">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <p class="card-text">{{ post.content }}</p>
+                        <p class="text-muted">By <strong>{{ post.author.username }}</strong> on {{ post.created_at }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                {% if user == post.author %}
+                                    <a href="{% url 'edit_post' post.id %}" class="btn btn-outline-warning">Edit</a>
+                                    <form method="post" action="{% url 'delete_post' post.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                    </form>
+                                {% endif %}
+                                <button class="btn btn-outline-info toggle-comments" data-post-id="{{ post.id }}">Show Comments</button>
+                            </div>
+                            <div class="emoji-ratings d-flex">
+                                <form method="post" action="{% url 'add_rating' post.id %}" class="me-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="emoji" value="😊">
+                                    <button type="submit" class="emoji-button btn btn-light">😊</button>
+                                </form>
+                                <form method="post" action="{% url 'add_rating' post.id %}" class="me-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="emoji" value="😢">
+                                    <button type="submit" class="emoji-button btn btn-light">😢</button>
+                                </form>
+                                <form method="post" action="{% url 'add_rating' post.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="emoji" value="😡">
+                                    <button type="submit" class="emoji-button btn btn-light">😡</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div id="comments-{{ post.id }}" class="hidden">
+                            <form method="post" action="{% url 'add_comment' post.id %}" class="mb-2">
+                                {% csrf_token %}
+                                <input type="text" name="content" class="form-control" placeholder="Add a comment" required>
+                                <button type="submit" class="btn btn-primary mt-2">Comment</button>
+                            </form>
+                            <ul class="list-group list-group-flush">
+                                {% for comment in post.comments.all %}
+                                    <li class="list-group-item">
+                                        {{ comment.content }} by <strong>{{ comment.author.username }}</strong>
+                                        {% if user == comment.author or user == post.author %}
+                                            <form method="post" action="{% url 'delete_comment' comment.id %}" class="d-inline-block float-end ms-2">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        {% endif %}
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item">No comments yet.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning text-center">No posts available.</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var csrfToken = '{{ csrf_token }}';
+    
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: '/users/get-events/',
+            eventDidMount: function(info) {
+                // Добавление информации о пользователе в описание события
+                var createdBy = info.event.extendedProps.created_by;
+                if (createdBy) {
+                    var avatarHtml = createdBy.avatar ? `<img src="${createdBy.avatar}" class="avatar" alt="${createdBy.username}" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;">` : '';
+                    var usernameHtml = `<span>${createdBy.username}</span>`;
+                    var eventContent = info.el.querySelector('.fc-event-title');
+                    if (eventContent) {
+                        eventContent.innerHTML = avatarHtml + usernameHtml + ' - ' + eventContent.innerHTML;
+                    }
+                }
+            },
+            dateClick: function(info) {
+                $('#addEventModal').modal('show');
+                $('#eventStart').val(info.dateStr);
+            },
+            eventClick: function(info) {
+                $('#editEventModal').modal('show');
+                $('#editEventId').val(info.event.id);
+                $('#editEventTitle').val(info.event.title);
+                $('#editEventStart').val(info.event.startStr.split('T')[0]);
+                $('#editEventEnd').val(info.event.endStr ? info.event.endStr.split('T')[0] : '');
+                $('#editEventLocation').val(info.event.extendedProps.location);
+                $('#editEventDescription').val(info.event.extendedProps.description);
+            }
+        });
+    
+        calendar.render();
+    
+        $('#addEventForm').on('submit', function(event) {
+            event.preventDefault();
+    
+            const startDate = $('#eventStart').val();
+            const endDate = $('#eventEnd').val();
+    
+            if (!startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                console.error('Invalid start date format. Expected format: YYYY-MM-DD');
+                return;
+            }
+    
+            if (endDate && !endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                console.error('Invalid end date format. Expected format: YYYY-MM-DD');
+                return;
+            }
+    
+            $.ajax({
+                url: '/users/add-event/',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: JSON.stringify({
+                    title: $('#eventTitle').val(),
+                    start_date: startDate,
+                    end_date: endDate,
+                    location: $('#eventLocation').val(),
+                    description: $('#eventDescription').val()
+                }),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (response.success) {
+                        calendar.refetchEvents();
+                        $('#addEventModal').modal('hide');
+                        $('#addEventForm')[0].reset();
+                    } else {
+                        console.error('Failed to add event:', response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error adding event:', error);
+                }
+            });
+        });
+    
+        $('#editEventForm').on('submit', function(event) {
+            event.preventDefault();
+            const eventId = $('#editEventId').val();
+    
+            const startDate = $('#editEventStart').val();
+            const endDate = $('#editEventEnd').val();
+    
+            if (!startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                console.error('Invalid start date format. Expected format: YYYY-MM-DD');
+                return;
+            }
+    
+            if (endDate && !endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                console.error('Invalid end date format. Expected format: YYYY-MM-DD');
+                return;
+            }
+    
+            $.ajax({
+                url: `/users/update-event/${eventId}/`,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: JSON.stringify({
+                    title: $('#editEventTitle').val(),
+                    start_date: startDate,
+                    end_date: endDate,
+                    location: $('#editEventLocation').val(),
+                    description: $('#editEventDescription').val()
+                }),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (response.success) {
+                        calendar.refetchEvents();
+                        $('#editEventModal').modal('hide');
+                    } else {
+                        console.error('Failed to update event:', response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating event:', error);
+                }
+            });
+        });
+    
+        $('#deleteEventBtn').on('click', function() {
+            const eventId = $('#editEventId').val();
+    
+            $.ajax({
+                url: `/users/delete-event/${eventId}/`,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: function(response) {
+                    if (response.success) {
+                        calendar.refetchEvents();
+                        $('#editEventModal').modal('hide');
+                    } else {
+                        console.error('Failed to delete event:', response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting event:', error);
+                }
+            });
+        });
+    
+        document.querySelectorAll('.toggle-comments').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const commentsSection = document.getElementById(`comments-${postId}`);
+    
+                if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
+                    commentsSection.style.display = 'block';
+                    this.textContent = 'Hide Comments';
+                } else {
+                    commentsSection.style.display = 'none';
+                    this.textContent = 'Show Comments';
+                }
+            });
+        });
+    });
+    
+</script>
+{% endblock %}
