@@ -36,22 +36,26 @@ def register(request):
         user_form = UserRegistrationForm(request.POST)
         profile_form = UserProfileForm(request.POST)
         if user_form.is_valid() and profile_form.is_valid():
+            # Создаем нового пользователя, но пока не сохраняем его
             new_user = user_form.save(commit=False)
             new_user.set_password(user_form.cleaned_data['password'])
             new_user.save()
 
+            # Создаем профиль пользователя
             profile = profile_form.save(commit=False)
             profile.user = new_user
             profile.save()
 
+            # Аутентифицируем и логиним пользователя
             user = authenticate(username=new_user.username, password=user_form.cleaned_data['password'])
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Registration successful. You are now logged in.')
-                return redirect('home')
+                return redirect('profile')  # Перенаправляем пользователя на страницу профиля
     else:
         user_form = UserRegistrationForm()
         profile_form = UserProfileForm()
+
     return render(request, 'users/register.html', {'user_form': user_form, 'profile_form': profile_form})
 
 # Профиль пользователя
