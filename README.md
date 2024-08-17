@@ -48,6 +48,239 @@ This application provides various features to enhance the dog walking experience
 - **Deleting Offers and Posts:** Users can delete their content with confirmation prompts.
 - **Archiving Messages:** Move messages to the archive instead of deleting them.
 
+## Hosting
+
+The project is successfully hosted on Render. The database is configured and connected using PostgreSQL, storing the application data securely.
+
+## Development Strategy
+
+### Phases
+
+- **Phase 1 - Setting up the Django environment:** Initial setup of the Django framework, including environment configuration and dependency installation.
+- **Phase 2 - Designing the database schema:** Planning and implementing the database schema using PostgreSQL to handle users, offers, posts, messages, and events.
+- **Phase 3 - Building core backend functionalities:** Implementing the essential backend features like user management, offer creation, and messaging systems.
+- **Phase 4 - Crafting the frontend:** Developing the frontend using HTML templates, enhancing the design with Bootstrap, and integrating JavaScript for interactive functionalities.
+- **Phase 5 - Rigorous testing:** Conducting extensive testing for functionality, responsiveness, and security to ensure the application performs as expected.
+- **Phase 6 - Deploying the application on Render:** Final deployment of the application, including database migration and securing the environment.
+
+## Security Features
+
+The project implements several security measures to protect user data and ensure secure operations:
+
+- **Password Encryption:** All user passwords are encrypted before storage to prevent unauthorized access.
+- **Role-Based Access Control:** User roles and permissions are enforced to restrict access to specific features based on user roles.
+- **CSRF Protection:** Cross-Site Request Forgery (CSRF) protection is enabled throughout the application to prevent unauthorized actions.
+- **Secure Communication:** Secure connections and data handling are ensured across the platform.
+
+## JavaScript Script
+
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+    // Calendar
+    var calendarEl = document.getElementById('calendar');
+    var csrfToken = '{{ csrf_token }}';
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: '/users/get-events/',
+        eventDidMount: function(info) {
+            var createdBy = info.event.extendedProps.created_by;
+            if (createdBy) {
+                var avatarHtml = createdBy.avatar ? `<img src="${createdBy.avatar}" class="avatar" alt="${createdBy.username}" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 5px;">` : '';
+                var usernameHtml = `<span>${createdBy.username}</span>`;
+                var eventContent = info.el.querySelector('.fc-event-title');
+                if (eventContent) {
+                    eventContent.innerHTML = avatarHtml + usernameHtml + ' - ' + eventContent.innerHTML;
+                }
+            }
+        },
+        dateClick: function(info) {
+            $('#addEventModal').modal('show');
+            $('#eventStart').val(info.dateStr);
+        },
+        eventClick: function(info) {
+            $('#editEventModal').modal('show');
+            $('#editEventId').val(info.event.id);
+            $('#editEventTitle').val(info.event.title);
+            $('#editEventStart').val(info.event.startStr.split('T')[0]);
+            $('#editEventEnd').val(info.event.endStr ? info.event.endStr.split('T')[0] : '');
+            $('#editEventLocation').val(info.event.extendedProps.location);
+            $('#editEventDescription').val(info.event.extendedProps.description);
+        }
+    });
+
+    calendar.render();
+
+    $('#addEventForm').on('submit', function(event) {
+        event.preventDefault();
+
+        const startDate = $('#eventStart').val();
+        const endDate = $('#eventEnd').val();
+
+        if (!startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            console.error('Invalid start date format. Expected format: YYYY-MM-DD');
+            return;
+        }
+
+        if (endDate && !endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            console.error('Invalid end date format. Expected format: YYYY-MM-DD');
+            return;
+        }
+
+        $.ajax({
+            url: '/users/add-event/',
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            data: JSON.stringify({
+                title: $('#eventTitle').val(),
+                start_date: startDate,
+                end_date: endDate,
+                location: $('#eventLocation').val(),
+                description: $('#eventDescription').val()
+            }),
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.success) {
+                    calendar.refetchEvents();
+                    $('#addEventModal').modal('hide');
+                    $('#addEventForm')[0].reset();
+                } else {
+                    console.error('Failed to add event:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error adding event:', error);
+            }
+        });
+    });
+
+    $('#editEventForm').on('submit', function(event) {
+        event.preventDefault();
+        const eventId = $('#editEventId').val();
+
+        const startDate = $('#editEventStart').val();
+        const endDate = $('#editEventEnd').val();
+
+        if (!startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            console.error('Invalid start date format. Expected format: YYYY-MM-DD');
+            return;
+        }
+
+        if (endDate && !endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            console.error('Invalid end date format. Expected format: YYYY-MM-DD');
+            return;
+        }
+
+        $.ajax({
+            url: `/users/update-event/${eventId}/`,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            data: JSON.stringify({
+                title: $('#editEventTitle').val(),
+                start_date: startDate,
+                end_date: endDate,
+                location: $('#editEventLocation').val(),
+                description: $('#editEventDescription').val()
+            }),
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.success) {
+                    calendar.refetchEvents();
+                    $('#editEventModal').modal('hide');
+                } else {
+                    console.error('Failed to update event:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating event:', error);
+            }
+        });
+    });
+
+    $('#deleteEventBtn').on('click', function() {
+        const eventId = $('#editEventId').val();
+
+        $.ajax({
+            url: `/users/delete-event/${eventId}/`,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            success: function(response) {
+                if (response.success) {
+                    calendar.refetchEvents();
+                    $('#editEventModal').modal('hide');
+                } else {
+                    console.error('Failed to delete event:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error deleting event:', error);
+            }
+        });
+    });
+
+    // Handle emoji ratings
+    document.querySelectorAll('.emoji-button').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const postId = this.getAttribute('data-post-id');
+            const emoji = this.getAttribute('data-emoji');
+            const csrfToken = '{{ csrf_token }}';
+
+            fetch(`{% url 'add_rating' 0 %}`.replace('0', postId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `emoji=${emoji}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update emoji counts
+                    const emojiCountsDiv = document.getElementById(`emoji-counts-${postId}`);
+                    emojiCountsDiv.innerHTML = `
+                        😊: ${data.emoji_counts.😊} |
+                        😢: ${data.emoji_counts.😢} |
+                        😡: ${data.emoji_counts.😡}
+                    `;
+                } else {
+                    console.error('Failed to add rating');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Handle comment toggling
+    document.querySelectorAll('.toggle-comments').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.getAttribute('data-post-id');
+            const commentsSection = document.getElementById(`comments-${postId}`);
+
+            if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
+                commentsSection.style.display = 'block';
+                this.textContent = 'Hide Comments';
+            } else {
+                commentsSection.style.display = 'none';
+                this.textContent = 'Show Comments';
+            }
+        });
+    });
+});
+
+
 ## Project Structure
 
 ```plaintext
@@ -125,4 +358,6 @@ To run this project locally, follow these steps:
 1. **Clone the repository:**
 bash
    git clone https://github.com/Svetlaniukas/dog_group
+   cd dog_walking_exchange# dog_group
+
    cd dog_walking_exchange# dog_group
