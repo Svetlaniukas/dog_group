@@ -1,4 +1,5 @@
-# Dog Walking Exchange
+
+# Dog Walking Exchange https://dog-group.onrender.com/
 
 **Dog Walking Exchange** is a web application designed to connect dog owners in Dublin, facilitating the process of finding walking partners, sharing dog walking tips, and accessing resources for dog training and parks in the area.
 
@@ -123,5 +124,5 @@ To run this project locally, follow these steps:
 
 1. **Clone the repository:**
 bash
-   git clone https://github.com/yourusername/dog_walking_exchange.git
+   git clone https://github.com/Svetlaniukas/dog_group
    cd dog_walking_exchange# dog_group
